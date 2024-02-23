@@ -3,7 +3,22 @@
 </head>
 <body>
   <script type="application/javascript">
+    //Cargar datos
+  function loadMessages() {
+    fetch('http://uwu-guate.site:3000/messages')
+      .then(response => response.json())
+      .then(data => {
+        data.forEach(message => {
+          // Asume que cada mensaje tiene propiedades 'text' y 'username'
+          const isMyMessage = message.username === 'Bryan España';
+          addMessage(message.text, isMyMessage);
+        });
+      })
+      .catch(error => console.error('Error al cargar los mensajes:', error));
+  }
 
+
+    var UserNameText ="Bryan España"
     document.body.style.margin = "0";
     document.body.style.padding = "0";
 
@@ -42,18 +57,15 @@
     userImage.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.8)';
     userImage.style.margin = '10px';
 
-    // Configuración para userName
     const userName = document.createElement('p');
-    userName.textContent = 'Nombre del Usuario';
+    userName.textContent = UserNameText;
     userName.style.color = 'inherit';
     userName.style.paddingLeft = '10px';
     userName.style.margin = '0';
 
-    // Agrega userImage y userName a userInfoContainer
     userInfoContainer.appendChild(userImage);
     userInfoContainer.appendChild(userName); 
 
-    // Crear botón para cambiar de tema
     const themeToggler = document.createElement('button');
     themeToggler.textContent = 'Tema';
     themeToggler.style.margin = '10px';
@@ -64,30 +76,65 @@
     themeToggler.style.padding = '10px 5px';
     themeToggler.style.borderRadius = '5px';
     themeToggler.style.cursor = 'pointer';
-    userInfoContainer.appendChild(themeToggler); //themeToggler
+    userInfoContainer.appendChild(themeToggler); 
 
-
-    // Agrega userInfoContainer al final del chatListContainer
     chatListContainer.appendChild(userInfoContainer);
     
+    const chatList = document.createElement('ul');
+    chatList.style.listStyle = 'none';
+    chatList.style.padding = '0';
+    chatList.style.margin = '0';
+    chatList.style.overflowY = 'auto';
+
     const chatAppContainer = document.createElement('div');
     chatAppContainer.style.width = '80%';
     chatAppContainer.style.height = '100vh';
     chatAppContainer.style.display = 'flex';
     chatAppContainer.style.flexDirection = 'column';
     mainContainer.appendChild(chatAppContainer);
-    // Crear contenedor del chat
+
     const chatContainer = document.createElement('section');
+    const chatHeader = document.createElement('div');
+    chatHeader.style.display = 'flex';
+    chatHeader.style.justifyContent = 'space-between';
+    chatHeader.style.alignItems = 'center';
+    chatHeader.style.padding = '10px';
+    chatHeader.style.backgroundColor = 'white'; // Color de fondo del encabezado
+    chatHeader.style.color = 'white';
+
+    const headerUserImage = document.createElement('img');
+    headerUserImage.src = 'user.svg'; // Asegúrate de tener esta imagen o cambia la ruta
+    headerUserImage.style.width = '40px';
+    headerUserImage.style.height = '40px';
+    headerUserImage.style.borderRadius = '50%';
+    headerUserImage.style.backgroundColor = 'white'; 
+    headerUserImage.style.objectFit = 'fill';
+    headerUserImage.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.8)';
+    headerUserImage.style.margin = '10px';
+
+    const chatName = document.createElement('span');
+    chatName.textContent = 'Chat de Grupo'; // Nombre del chat
+    chatName.style.flexGrow = '1';
+    chatName.style.color = 'black';
+
+    const infoIcon = document.createElement('img');
+    infoIcon.src = 'info.svg'; // Asegúrate de tener este icono o cambia la ruta
+    infoIcon.style.width = '24px';
+    infoIcon.style.height = '24px';
+    infoIcon.style.cursor = 'pointer';
+
+    chatHeader.appendChild(headerUserImage);
+    chatHeader.appendChild(chatName);
+    chatHeader.appendChild(infoIcon);
+
+    chatAppContainer.appendChild(chatHeader);
+    
     chatAppContainer.appendChild(chatContainer);
     chatContainer.style.display = 'flex';
     chatContainer.style.flexDirection = 'column';
     chatContainer.style.height = '100vh';
 
-
-
-    //chatContainer.appendChild(themeToggler);
-
-    // Crear contenedor para los mensajes
+    
     const messagesContainer = document.createElement('article');
     messagesContainer.style.flexGrow = '1';
     messagesContainer.style.overflowY = 'auto';
@@ -100,53 +147,73 @@
     messageInput.type = 'text';
     messageInput.placeholder = 'Escribe un mensaje...';
     messageInput.maxLength = 140;
+    
     messageInput.style.margin = '10px';
     messageInput.style.padding = '10px 20px';
-    messageInput.style.height = '40px'; // Altura fija para evitar cambios al hacer clic
+    messageInput.style.height = '40px'; 
     messageInput.style.border = 'none';
     messageInput.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.8)';
     messageInput.style.borderRadius = '5px';
     chatContainer.appendChild(messageInput);
 
-    // Función para agregar mensajes al contenedor
-    function addMessage(text) {
-      // Crea un contenedor para el mensaje y el indicador "Yo"
+    function addMessage(text, isSentByUser) {
+      const isImageUrl = (url) => {
+        return /\.(jpg|jpeg|png|gif)$/.test(url);
+      };
       const messageContainer = document.createElement('div');
       messageContainer.style.display = 'flex';
       messageContainer.style.flexDirection = 'column';
-      messageContainer.style.alignItems = 'flex-end'; // Alinea los mensajes a la derecha
+      messageContainer.style.alignItems = 'flex-end'; 
       messageContainer.style.marginBottom = '10px';
+      messageContainer.style.alignItems = isSentByUser ? 'flex-end' : 'flex-start'; // Alinea a la derecha si es enviado por el usuario, de lo contrario a la izquierda
+      
 
-      // Crea un div para el mensaje que parezca una nube de chat
+      if (isImageUrl(text)) {
+        const image = document.createElement('img');
+        image.src = text;
+        image.style.maxWidth = '200px'; 
+        image.style.borderRadius = '5px'; 
+        image.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)'; 
+        messageContainer.appendChild(image);
+      } else {
+        const messageBubble = document.createElement('div');
+        messageBubble.textContent = text;
+        messageBubble.style.backgroundColor = 'white'; 
+        messageBubble.style.color = 'black'; 
+        messageBubble.style.backgroundColor = isSentByUser ? '#007bff' : '#e2e2e2'; // Azul para enviado, gris para recibido
+        messageBubble.style.color = isSentByUser ? 'white' : 'black'; 
+        messageBubble.style.padding = '10px';
+        messageBubble.style.borderRadius = '15px'; 
+        messageBubble.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)';
+        messageBubble.style.maxWidth = '80%'; 
+        messageBubble.style.wordBreak = 'break-word';
+        messageContainer.appendChild(messageBubble);
+      }
       const messageBubble = document.createElement('div');
-      messageBubble.textContent = text;
-      messageBubble.style.backgroundColor = '#ffff'; // Color de fondo azul
-      messageBubble.style.color = 'black'; // Texto en color blanco
+      messageBubble.style.backgroundColor = 'white'; 
+      messageBubble.style.color = 'black'; 
       messageBubble.style.padding = '10px';
-      messageBubble.style.borderRadius = '15px'; // Bordes redondeados para el efecto de nube
+      messageBubble.style.borderRadius = '15px'; 
       messageBubble.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)';
-      messageBubble.style.maxWidth = '80%'; // Máximo ancho del mensaje
-      messageBubble.style.wordBreak = 'break-word'; // Asegura que el texto se ajuste dentro del bubble
+      messageBubble.style.maxWidth = '80%'; 
+      messageBubble.style.wordBreak = 'break-word'; 
 
-      // Crea un pequeño div para el texto "Yo"
       const senderIndicator = document.createElement('div');
-      senderIndicator.textContent = "Yo";
-      senderIndicator.style.fontSize = '0.8rem'; // Tamaño de fuente más pequeño
-      senderIndicator.style.marginRight = '5px'; // Un pequeño margen a la derecha
+      senderIndicator.textContent = UserNameText;
+      senderIndicator.style.fontSize = '0.8rem'; 
+      senderIndicator.style.marginRight = '5px'; 
 
-      // Agrega el mensaje y el indicador "Yo" al contenedor
       messageContainer.appendChild(senderIndicator);
-      messageContainer.appendChild(messageBubble);
 
-      // Agrega el contenedor de mensaje al contenedor principal de mensajes
       messagesContainer.appendChild(messageContainer);
 
-      // Desplaza el contenedor de mensajes al último mensaje
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
+    addMessage('Este es mi mensaje.', true);
 
+// Para un mensaje recibido
+addMessage('Este es un mensaje recibido.', false);
 
-    // Evento para enviar mensaje con Enter
     messageInput.addEventListener('keypress', function(event) {
       if (event.key === 'Enter' && messageInput.value.trim() !== '') {
         addMessage(messageInput.value);
@@ -155,7 +222,6 @@
       }
     });
 
-    // Función para cambiar el tema
     function toggleTheme() {
       const currentTheme = localStorage.getItem('theme') || 'light';
     if (currentTheme === 'light') {
@@ -176,31 +242,35 @@
     chatListContainer.style.transition = 'background-color 1s, color 1s';
     document.body.style.transition = 'background-color 1s, color 1s';
     messagesContainer.style.transition = 'background-color 1s';
+    chatHeader.style.transition = 'background-color 1s, color 1s';
+    chatName.style.transition = 'color 1s';
 
     if (currentTheme === 'light') {
-      userInfoContainer.style.backgroundColor = '#333'; // Fondo oscuro
-      userInfoContainer.style.color = '#fff'; // Texto claro
-      chatListContainer.style.backgroundColor = '#333'; // Fondo oscuro
-      chatListContainer.style.color = '#fff'; // Texto claro
+      userInfoContainer.style.backgroundColor = '#333'; 
+      userInfoContainer.style.color = '#fff'; 
+      chatListContainer.style.backgroundColor = '#333';
+      chatListContainer.style.color = '#fff';
+      chatHeader.style.backgroundColor = '#575757';
+      chatName.style.color = '#fff';
       messagesContainer.style.backgroundColor = '#333333';
       document.body.style.backgroundColor = '#333'; 
       document.body.style.color = '#fff';
     } else {
-      userInfoContainer.style.backgroundColor = '#fff'; // Fondo claro
-      userInfoContainer.style.color = '#000'; // Texto oscuro
+      userInfoContainer.style.backgroundColor = '#fff';
+      userInfoContainer.style.color = '#000'; 
+      chatHeader.style.backgroundColor = '#fff';
+      chatName.style.color = '#000';
       messagesContainer.style.backgroundColor = '#e2e2e2';
-      chatListContainer.style.backgroundColor = '#fff'; // Fondo claro
-      chatListContainer.style.color = '#000'; // Texto oscuros
+      chatListContainer.style.backgroundColor = '#fff';
+      chatListContainer.style.color = '#000'; 
       document.body.style.backgroundColor = '#fff';
       document.body.style.color = '#000';
     }
 
     }
 
-    // Evento para el botón de cambiar tema
     themeToggler.addEventListener('click', toggleTheme);
 
-    // Cargar el tema guardado al cargar la página
     document.addEventListener('DOMContentLoaded', () => {
       const preferredTheme = localStorage.getItem('theme');
       if (preferredTheme === 'dark') {
