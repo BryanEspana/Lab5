@@ -4,19 +4,23 @@
 <body>
   <script type="application/javascript">
     //Cargar datos
-  function loadMessages() {
+    function loadMessages() {
     fetch('http://uwu-guate.site:3000/messages')
       .then(response => response.json())
       .then(data => {
-        data.forEach(message => {
-          // Asume que cada mensaje tiene propiedades 'text' y 'username'
-          const isMyMessage = message.username === 'Bryan España';
-          addMessage(message.text, isMyMessage);
+        data.forEach(messageData => {
+          const MyUserSend = messageData.username === 'Bryan España';
+          // Pasamos el objeto completo de messageData a addMessage
+          addMessage(messageData, MyUserSend);
+          console.log("MessageData: ", messageData);
         });
       })
       .catch(error => console.error('Error al cargar los mensajes:', error));
-  }
+}
 
+
+
+document.addEventListener('DOMContentLoaded', loadMessages);
 
     var UserNameText ="Bryan España"
     document.body.style.margin = "0";
@@ -156,7 +160,10 @@
     messageInput.style.borderRadius = '5px';
     chatContainer.appendChild(messageInput);
 
-    function addMessage(text, isSentByUser) {
+    function addMessage(messageData, MyUserSend) {
+      const messageContent = messageData.content; // Asegurándose de extraer el contenido del mensaje correctamente.
+      const senderUsername = messageData.username; 
+      console.log("LOs mysenduser: ", MyUserSend);
       const isImageUrl = (url) => {
         return /\.(jpg|jpeg|png|gif)$/.test(url);
       };
@@ -165,62 +172,92 @@
       messageContainer.style.flexDirection = 'column';
       messageContainer.style.alignItems = 'flex-end'; 
       messageContainer.style.marginBottom = '10px';
-      messageContainer.style.alignItems = isSentByUser ? 'flex-end' : 'flex-start'; // Alinea a la derecha si es enviado por el usuario, de lo contrario a la izquierda
+      messageContainer.style.alignItems = MyUserSend ? 'flex-end' : 'flex-start';
       
 
-      if (isImageUrl(text)) {
+ /*
+      if (isImageUrl(messageData)) {
         const image = document.createElement('img');
-        image.src = text;
+        image.src = messageData;
         image.style.maxWidth = '200px'; 
         image.style.borderRadius = '5px'; 
         image.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)'; 
         messageContainer.appendChild(image);
       } else {
+
         const messageBubble = document.createElement('div');
-        messageBubble.textContent = text;
+        messageBubble.textContent = messageData[2];
         messageBubble.style.backgroundColor = 'white'; 
         messageBubble.style.color = 'black'; 
-        messageBubble.style.backgroundColor = isSentByUser ? '#007bff' : '#e2e2e2'; // Azul para enviado, gris para recibido
-        messageBubble.style.color = isSentByUser ? 'white' : 'black'; 
+        messageBubble.style.backgroundColor = MyUserSend ? '#007bff' : '#e2e2e2'; // Azul para enviado, gris para recibido
+        messageBubble.style.color = MyUserSend ? 'white' : 'black'; 
         messageBubble.style.padding = '10px';
         messageBubble.style.borderRadius = '15px'; 
         messageBubble.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)';
         messageBubble.style.maxWidth = '80%'; 
         messageBubble.style.wordBreak = 'break-word';
         messageContainer.appendChild(messageBubble);
-      }
+      } */
       const messageBubble = document.createElement('div');
       messageBubble.style.backgroundColor = 'white'; 
       messageBubble.style.color = 'black'; 
+      messageBubble.textContent = messageContent; 
       messageBubble.style.padding = '10px';
+      messageBubble.style.backgroundColor = MyUserSend ? '#007bff' : '#e2e2e2'; // Azul para enviado, gris para recibido
+      messageBubble.style.color = MyUserSend ? 'white' : 'black'; 
       messageBubble.style.borderRadius = '15px'; 
       messageBubble.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)';
       messageBubble.style.maxWidth = '80%'; 
       messageBubble.style.wordBreak = 'break-word'; 
+      messageContainer.appendChild(messageBubble);
 
       const senderIndicator = document.createElement('div');
-      senderIndicator.textContent = UserNameText;
+      senderIndicator.textContent = senderUsername;
       senderIndicator.style.fontSize = '0.8rem'; 
       senderIndicator.style.marginRight = '5px'; 
 
       messageContainer.appendChild(senderIndicator);
-
       messagesContainer.appendChild(messageContainer);
 
       messagesContainer.scrollTop = messagesContainer.scrollHeight;
     }
-    addMessage('Este es mi mensaje.', true);
 
-// Para un mensaje recibido
-addMessage('Este es un mensaje recibido.', false);
 
     messageInput.addEventListener('keypress', function(event) {
       if (event.key === 'Enter' && messageInput.value.trim() !== '') {
-        addMessage(messageInput.value);
-        messageInput.value = '';
         event.preventDefault();
+
+        
+        const messageData = {
+          username: 'Bryan España', 
+          message: messageInput.value.trim()
+        };
+
+        fetch('http://uwu-guate.site:3000/messages', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(messageData),
+        })
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('La solicitud POST falló');
+          }
+          return response.json();
+        })
+        .then(data => {
+          console.log('Mensaje enviado:', data);
+          addMessage(messageData, true); 
+        })
+        .catch(error => {
+          console.error('Error al enviar el mensaje:', error);
+        });
+
+        messageInput.value = '';
       }
     });
+
 
     function toggleTheme() {
       const currentTheme = localStorage.getItem('theme') || 'light';
