@@ -16,7 +16,6 @@
         displayMessages(allMessages); 
         data.reverse().forEach(messageData => {
           const MyUserSend = messageData.username === 'Bryan España';
-          // Pasamos el objeto completo de messageData a addMessage
           addMessage(messageData, MyUserSend);
           
           console.log("MessageData: ", messageData);
@@ -27,29 +26,28 @@
       
 }
 function displayUsernames(usernames) {
-    // Limpiar el contenedor antes de agregar nuevos elementos
     userInfoDiv.innerHTML = '';
 
     usernames.forEach(username => {
         const userContainer = document.createElement('div');
         userContainer.style.display = 'flex';
         userContainer.style.alignItems = 'center';
-        userContainer.style.marginBottom = '10px'; // Espacio entre usuarios
+        userContainer.style.marginBottom = '10px'; 
 
         const userImage = document.createElement('img');
-        userImage.src = 'user.svg'; // Imagen predeterminada para todos los usuarios
+        userImage.src = 'user.svg'; 
         userImage.style.width = '40px';
         userImage.style.height = '40px';
         userImage.style.borderRadius = '50%';
         userImage.style.backgroundColor = 'white';
         userImage.style.objectFit = 'fill';
         userImage.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.8)';
-        userImage.style.marginRight = '10px'; // Espacio entre la imagen y el nombre del usuario
+        userImage.style.marginRight = '10px';
 
         const userName = document.createElement('p');
-        userName.textContent = username; // Establecer el nombre de usuario
+        userName.textContent = username; 
         userName.style.margin = '0';
-        userName.style.color = 'black'; // Ajustar según el tema
+        userName.style.color = 'black'; 
 
         userContainer.appendChild(userImage);
         userContainer.appendChild(userName);
@@ -58,19 +56,18 @@ function displayUsernames(usernames) {
     });
 }
 
-// Función para mostrar mensajes
 function displayMessages(messages) {
-    messagesContainer.innerHTML = ''; // Limpiar mensajes existentes
+    messagesContainer.innerHTML = ''; 
     messages.reverse().forEach(messageData => {
         const MyUserSend = messageData.username === 'Bryan España';
         addMessage(messageData, MyUserSend);
     });
 }
-// Función para manejar la búsqueda
+
 function handleSearch() {
-    const searchText = InputSearch.value.toLowerCase(); // Obtener texto de búsqueda
+    const searchText = InputSearch.value.toLowerCase();
     const filteredMessages = allMessages.filter(message => message.content.toLowerCase().includes(searchText));
-    displayMessages(filteredMessages); // Mostrar solo mensajes filtrados
+    displayMessages(filteredMessages); 
 }
 
 
@@ -175,11 +172,11 @@ document.addEventListener('DOMContentLoaded', loadMessages);
     chatHeader.style.justifyContent = 'space-between';
     chatHeader.style.alignItems = 'center';
     chatHeader.style.padding = '10px';
-    chatHeader.style.backgroundColor = 'white'; // Color de fondo del encabezado
+    chatHeader.style.backgroundColor = 'white'; 
     chatHeader.style.color = 'white';
 
     const headerUserImage = document.createElement('img');
-    headerUserImage.src = 'user.svg'; // Asegúrate de tener esta imagen o cambia la ruta
+    headerUserImage.src = 'user.svg'; 
     headerUserImage.style.width = '40px';
     headerUserImage.style.height = '40px';
     headerUserImage.style.borderRadius = '50%';
@@ -189,12 +186,12 @@ document.addEventListener('DOMContentLoaded', loadMessages);
     headerUserImage.style.margin = '10px';
 
     const chatName = document.createElement('span');
-    chatName.textContent = 'STW24'; // Nombre del chat
+    chatName.textContent = 'STW24';
     chatName.style.flexGrow = '1';
     chatName.style.color = 'black';
 
     const infoIcon = document.createElement('img');
-    infoIcon.src = 'info.svg'; // Asegúrate de tener este icono o cambia la ruta
+    infoIcon.src = 'info.svg'; 
     infoIcon.style.width = '24px';
     infoIcon.style.height = '24px';
     infoIcon.style.cursor = 'pointer';
@@ -250,7 +247,7 @@ document.addEventListener('DOMContentLoaded', loadMessages);
 
     function addMessage(messageData, MyUserSend) {
       
-      const messageContent = messageData.content; // Asegurándose de extraer el contenido del mensaje correctamente.
+      const messageContent = messageData.content; 
       const senderUsername = messageData.username; 
       console.log("LOs mysenduser: ", MyUserSend);
       function isImageUrl(url) {
@@ -272,20 +269,20 @@ document.addEventListener('DOMContentLoaded', loadMessages);
  
       if (isImageUrl(messageContent)) {
       const image = document.createElement('img');
-      image.src = messageContent; // Asegúrate de usar messageContent aquí
+      image.src = messageContent; 
       image.style.maxWidth = '200px';
       image.style.borderRadius = '5px';
       image.style.boxShadow = '0 0 5px rgba(0, 0, 0, 0.2)';
       messageContainer.appendChild(image);
     } else if (isVideoUrl(messageContent)) {
         const video = document.createElement('video');
-        video.src = messageContent; // Y también aquí
+        video.src = messageContent;
         video.style.maxWidth = '200px';
-        video.controls = true; // Permite al usuario controlar la reproducción del video
+        video.controls = true; 
         messageContainer.appendChild(video);
     } else {
         const messageBubble = document.createElement('div');
-        messageBubble.textContent = messageContent; // Este está correcto
+        messageBubble.textContent = messageContent; 
         messageBubble.style.padding = '10px';
         messageBubble.style.backgroundColor = MyUserSend ? '#007bff' : '#e2e2e2';
         messageBubble.style.color = MyUserSend ? 'white' : 'black';
